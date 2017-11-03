@@ -1,0 +1,233 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Missile Firing Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;   
+            background-color: hotpink;   
+        }
+    </style>
+    <script>
+        var count;
+        var context;               
+        var velocity;               
+        var angle;            
+        var missileV;               
+        var missileVx;               
+        var missileVy;               
+        var missileX;            
+        var missileY;            
+        var missileSize;                     
+        var image = new Image();      
+        image.src = "lawn.png";      
+        var backimage1 = new Image();
+        backimage1.src = "play1.png";
+        var backimage2 = new Image();
+        backimage2.src = "play2.png";
+        var timer;
+        var count = 0;
+		var smissile = [5,5];
+        var mmissile = [3,3];
+        var bmissile = [1,1];
+        var hp = [150,150];
+        function drawmissile() {
+            context.beginPath();
+            context.arc(missileX, missileY, missileSize, 0, 2.0 * Math.PI, true);
+            context.fillStyle = "gray";
+            context.fill();
+        }
+        function drawhp(){
+            var Tank1 = document.getElementById("canvas");
+            var Tank1hp = Tank1.getContext("2d");
+            Tank1hp.beginPath();
+            Tank1hp.font='bold 8pt Arial';
+            Tank1hp.fillText('Tank1', 20, 45);
+            Tank1hp.strokeStyle = "green";
+            Tank1hp.lineWidth = 20;
+            Tank1hp.moveTo(60,40);
+            Tank1hp.lineTo(hp[0],40);
+            Tank1hp.stroke();
+        }
+        function drawhp2(){
+            var Tank2 = document.getElementById("canvas");
+            var Tank2hp = Tank2.getContext("2d");
+            Tank2hp.beginPath();
+            Tank2hp.font='bold 8pt Arial';
+            Tank2hp.fillText('Tank2', 20, 75);
+            Tank2hp.strokeStyle = "green";
+            Tank2hp.lineWidth = 20;
+            Tank2hp.moveTo(60,70);
+            Tank2hp.lineTo(hp[1],70);
+            Tank2hp.stroke();
+        }
+        function drawBackground() {
+            context.drawImage(image, 0, 270);
+            context.drawImage(backimage1, 20, 200);
+            context.drawImage(backimage2, 410, 200);
+        }    
+        function draw() {
+            context.clearRect(0, 0, 500, 300);
+            drawhp();
+            drawhp2();
+            drawmissile();
+            drawBackground();
+        }      
+        function init() {
+            missileX = 40;
+            missileY = 250;
+            missileSize = document.getElementById("missileSize").value;
+            context = document.getElementById('canvas').getContext('2d');
+            draw();
+            if(missileSize == 10)
+                    {
+                        if(smissile[0] < 0){
+                        alert("No Missile");
+                        missileSize = 0; 
+                        missileY = -20;
+                        }
+                        smissile[0]--;
+                    }
+            else if(missileSize == 30)
+                    {
+                        if(mmissile[0] < 1){
+                        alert("No Missile");
+                        missileSize = 0; 
+                        missileY = -20;
+                        }
+                        mmissile[0]--;
+                    }
+            else if(missileSize == 40)
+                    {
+                        if(bmissile[0] < 1){
+                        alert("No Missile");
+                        missileSize = 0; 
+                        missileY = -20;
+                        }
+                        bmissile[0]--;
+                    }
+        }
+
+        function init2() {
+            missileX = 430;
+            missileY = 250;
+            missileSize = document.getElementById("missileSize").value;
+            context = document.getElementById('canvas').getContext('2d');
+            draw();
+            if(missileSize == 10){
+                        if(smissile[1] < 1){
+                        alert("No Missile");
+                        missileSize = 0;
+                        missileY = -20;
+                        }
+                    smissile[1]--;
+            }
+            else if(missileSize == 30){
+                        if(mmissile[1] < 1){
+                        alert("No Missile");   
+                        missileSize = 0;
+                        missileY = -20;
+                        }
+                    mmissile[1]--;
+            }
+            else if(missileSize == 40){
+                        if(bmissile[1] < 1){
+                        alert("No Missile");
+                        missileSize = 0;
+                        missileY = -20;
+                        }
+                    bmissile[1]--;
+            }
+        }
+        function Fire(){
+            if(count == 0){
+                   init();
+                    velocity = Number(document.getElementById("velocity").value);
+                    angle = Number(document.getElementById("angle").value);
+                    var angleR = angle * Math.PI / 180;
+                    missileVx = velocity * Math.cos(angleR);
+                    missileVy = -velocity * Math.sin(angleR);
+                    //draw();
+                    timer = setInterval(calculate, 100);
+                    count++;
+				return false 
+            }
+            else if(count == 1) {
+                    init2();
+                    velocity = Number(document.getElementById("velocity").value);
+                    angle = Number(document.getElementById("angle").value);
+                    var angleR = angle * Math.PI / 180;
+                    missileVx = -velocity * Math.cos(angleR);
+                    missileVy = -velocity * Math.sin(angleR);
+                   // draw();
+                    timer = setInterval(calculate, 100);
+                    count--;
+                return false 
+			}              
+        }     
+        function calculate() {
+            missileVy = missileVy + 1.98;
+
+            missileX = missileX + missileVx;
+            missileY = missileY + missileVy;
+
+            missileSize = document.getElementById("missileSize").value;
+            context = document.getElementById('canvas').getContext('2d');
+
+            if ((missileX >= 430) && (missileX <= 450) && (missileY >= 200) && (missileY <= 270)) {
+                if(missileSize == 10){
+                    hp[1] = hp[1] - missileSize;
+                }
+                else if(missileSize == 30){
+                    hp[1] = hp[1] - missileSize;
+                }
+                else if(missileSize == 40){
+                    hp[1] = hp[1] - missileSize;
+                }
+                clearInterval(timer);
+            }
+
+            if ((missileX >= 20) && (missileX <= 40) && (missileY >= 200) && (missileY <= 270)) {
+                if(missileSize == 10){
+                    hp[0] = hp[0] - missileSize;
+                }
+                else if(missileSize == 30){
+                    hp[0] = hp[0] - missileSize;
+                }
+                else if(missileSize == 40){
+                    hp[0] = hp[0] - missileSize;
+                }
+                clearInterval(timer);
+            }
+            if(hp[0] <= 60){
+                hp[0] = 60;
+                alert("play2가 승리하였습니다.");
+				location.reload();    
+            }
+            if(hp[1] <= 60){
+                hp[1] = 60;
+                alert("play1가 승리하였습니다.");
+				location.reload();
+            }
+         
+            if (missileY >= 300 || missileY < 0) {
+                clearInterval(timer);
+            }
+            draw();
+        }   
+    </script>
+</head>
+<body onload="init();"> 
+    <canvas id="canvas" width="500" height="300"></canvas>
+    <div id="control">
+        <select id = "missileSize">
+            <option value = "10"> Small missile </option>
+            <option value = "30"> Medium missile </option>
+            <option value = "40"> Big missile </option> 
+        </select>
+        velocity<input id="velocity" value="30" type="number" min="0" max="100" step="1" />
+        angle<input id="angle" value="45" type="number" min="0" max="90" step="1" />
+                <button onclick="Fire()">FIRE!</button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Missile Object</title>
+    <style>
+        canvas {
+            border: 1px solid black;   
+            background-color: #FFFFFF;   
+        }
+    </style>
+    <script>
+		var Tank1;
+		var Tank2;
+		var tankName;
+		var count=false;
+   		var context;               
+        var velocity;               
+        var angle;                  
+        var missileVx;               
+        var missileVy;          
+        var image = new Image();      
+        image.src = "lawn.png";      
+        var backimage1 = new Image();
+        backimage1.src = "play1.png";
+        var backimage2 = new Image();
+        backimage2.src = "play2.png";
+        var timer;	
+		
+		function drawBackground() {
+            context.drawImage(image, 0, 270);
+            context.drawImage(backimage1, 20, 200);
+            context.drawImage(backimage2, 410, 200);
+        }		
+		function draw() {
+				context.clearRect(0, 0, 500, 300);
+				Tank1.drawhp("Tank1",60,40);
+				Tank2.drawhp("Tank2",60,60);
+				Tank1.drawMissile(40,250);
+				Tank2.drawMissile(430,250);
+				drawBackground();
+		}	
+        function Tank(missileX, missileY){
+        	this.missileX = missileX;
+        	this.missileY = missileY;
+        	this.missileSize = document.getElementById("missileSize").value;
+        	this.health = 150;
+        	this.sMissile = 5;
+        	this.mMissile = 3;
+        	this.bMissile = 1;
+        	this.drawMissile = function(){ //미사일 그리기        		
+				context.beginPath();
+            	context.arc(this.missileX, this.missileY, this.missileSize, 0, 2.0 * Math.PI, true);
+           		context.fillStyle = "gray";
+         		context.fill();			
+        	}
+			this.drawhp = function (tankName,x1,y1){ //체력 생성자
+        	    var Tank0 = document.getElementById("canvas");
+            	var Tankhp = Tank0.getContext("2d");
+ 	            Tankhp.beginPath();
+      	        Tankhp.font='bold 8pt Arial';
+         	    Tankhp.fillText(tankName, x1-40, y1+3);
+            	Tankhp.strokeStyle = "green";
+            	Tankhp.lineWidth = 15;
+            	Tankhp.moveTo(x1,y1);
+            	Tankhp.lineTo(x1+this.health,y1);
+            	Tankhp.stroke();
+        	}		
+			this.calculate = function(){
+				missileVy = missileVy + 1.98;
+				missileX = missileX + missileVx;
+				missileY = missileY + missileVy;
+			            
+				if (((missileX >= 430) && (missileX <= 450) && (missileY >= 200) && (missileY <= 270))||
+					((missileX >= 20) && (missileX <= 40) && (missileY >= 200) && (missileY <= 270))) {
+					if(missileSize == 10){
+						this.health -= missileSize;
+					}
+					else if(missileSize == 30){
+						this.health -= missileSize;
+					}
+					else if(missileSize == 40){
+						this.health -= missileSize;
+					}
+					clearInterval(timer);
+				}
+				if(health == 60){
+					alert("가 승리하였습니다.");
+					location.reload();
+				}
+				if (missileY >= 300 || missileY < 0) {
+					clearInterval(timer);
+				}
+				draw();				
+			}	
+        }
+		function init(){
+			Tank1 = new Tank(40,250);//Tank1 객체 생성
+			Tank2 = new Tank(430,250);//Tank2 객체 생성
+			missileSize = document.getElementById("missileSize").value;
+			context = document.getElementById('canvas').getContext('2d');
+			draw();
+		}
+		function Fire(){
+            if(count == false){
+				init();
+                velocity = Number(document.getElementById("velocity").value);
+                angle = Number(document.getElementById("angle").value);
+                var angleR = angle * Math.PI / 180;
+                missileVx = velocity * Math.cos(angleR);
+				missileVy = -velocity * Math.sin(angleR);
+                timer = setInterval(Tank1.calculate, 100);
+                count=true;
+            }
+            else if(count == true) {
+                init();
+                velocity = Number(document.getElementById("velocity").value);
+                angle = Number(document.getElementById("angle").value);
+                var angleR = angle * Math.PI / 180;
+                missileVx = -velocity * Math.cos(angleR);
+                missileVy = -velocity * Math.sin(angleR);
+                timer = setInterval(Tank2.calculate, 100);
+                count=false;                   
+            }
+        }
+    </script>
+</head>
+<body onload="init();">
+    <canvas id="canvas" width="500" height="300"></canvas>
+    <div id="control">
+        <select id = "missileSize">
+            <option value = "10"> Small missile </option>
+            <option value = "30"> Medium missile </option>
+            <option value = "40"> Big missile </option>
+        </select>
+        velocity<input id="velocity" value="30" type="number" min="0" max="100" step="1" />
+        angle<input id="angle" value="45" type="number" min="0" max="90" step="1" />
+        <button onclick="Fire()">FIRE!</button>
+    </div>
+</body>
+</html>
